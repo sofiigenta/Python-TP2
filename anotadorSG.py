@@ -1,5 +1,8 @@
 #! /usr/bin/python3
+import datetime
 from notaSG import Nota
+from tareaSG import Tarea
+
 class Anotador:
     '''Representa una colección de Notas que se pueden etiquetar, modificar, y
     buscar'''
@@ -9,7 +12,9 @@ class Anotador:
         '''Inicializa el anotador con una lista vacía de Notas'''
         n1 = Nota('pagar boleta gas ', 'gas')
         n2 = Nota ('llamar por telefono', 'llamada')
-        self.notas = [n1,n2]
+        n3 = Tarea('Ir a la verduleria', 'compras', 'Sofia', datetime.date(2020,4,13)) 
+        n4 = Tarea('Ir al dentista','dentista', 'Sofia', datetime.date(2021,6,29)) 
+        self.notas = [n1,n2,n3,n4]
         
         #p Para facilitar las pruebas, podrías inicializarlo con dos o tres
         # notas precargadas, para evitar cargarlas a mano cada vez que se
@@ -65,3 +70,46 @@ class Anotador:
             else:
                 None
         return notas
+    
+    def nueva_tarea (self, texto, etiquetas, responsable, fecha_vencimiento):
+        n = Tarea(texto, etiquetas, responsable, fecha_vencimiento)
+        self.notas.append(n)
+
+    def finalizar_tarea (self, id_nota):
+        nota = self._buscar_por_id(id_nota)
+        if hasattr(nota, 'responsable') and nota.finalizado == False:
+            nota.finalizado = True
+            print ('Tarea finalizada')
+        else:
+            print ('No se encontro esta tarea o ya se encuentra finalizada')
+
+
+    def tareas_vencidas (self, responsable= None):
+        notas = []
+        if responsable: 
+            for nota in self.notas:
+                if hasattr(nota, 'responsable') and nota.vencido() and nota.responsable == responsable:
+                    notas.append(nota)
+        else:
+            for nota in self.notas:
+                if hasattr (nota, 'responsable') and nota.vencido():
+                    notas.append(nota)
+        return notas
+       
+ 
+
+    def tareas_por_vencer (self, responsable=None):
+        notas = []
+        if responsable:
+            for nota in self.notas:
+                if hasattr(nota, 'responsable') and nota.proximo_a_vencer() and nota.responsable == responsable:
+                    notas.append(nota)
+        else:
+            for nota in self.notas:
+                if hasattr(nota, 'responsable') and nota.proximo_a_vencer():
+                    notas.append(nota)
+        return notas
+        
+
+
+ 
